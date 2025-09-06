@@ -1,1 +1,9 @@
+# Android Studio / Gradle
+.idea/
+.gradle/
 /build
+local.properties
+
+# OS-specific
+.DS_Store
+Thumbs.db
