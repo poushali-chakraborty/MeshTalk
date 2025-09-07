@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity {
     EditText nicknameInput;
     Button saveNickButton;
     RecyclerView neighborRecyclerView;
-    NeighborAdapter neighborAdapter; // ✅ make sure spelling matches the class
+    NeighborAdapter neighborAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Setup RecyclerView
         neighborRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        neighborAdapter = new NeighborAdapter(this); // ✅ correct spelling
+        neighborAdapter = new NeighborAdapter(this); // uses default Alice, Bob, Charlie
         neighborRecyclerView.setAdapter(neighborAdapter);
 
         saveNickButton.setOnClickListener(new View.OnClickListener() {

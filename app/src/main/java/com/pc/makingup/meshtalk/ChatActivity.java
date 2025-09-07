@@ -1,7 +1,6 @@
 package com.pc.makingup.meshtalk;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -14,12 +13,13 @@ import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
 
-    private RecyclerView chatRecyclerView;
-    private EditText messageInput;
-    private Button sendButton;
+    RecyclerView chatRecyclerView;
+    EditText messageInput;
+    Button sendButton;
 
-    private ChatAdapter chatAdapter;
-    private List<String> messageList = new ArrayList<>(); // TEMP — replace with DB later
+    ChatAdapter chatAdapter;
+    List<String> messageList = new ArrayList<>();
+    List<Boolean> sentFlags = new ArrayList<>(); // true = sent, false = received
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,24 +30,36 @@ public class ChatActivity extends AppCompatActivity {
         messageInput = findViewById(R.id.etMessage);
         sendButton = findViewById(R.id.btnSend);
 
+        // Show neighbor name in ActionBar
+        String neighborName = getIntent().getStringExtra("neighbor_name");
+        if (neighborName != null) {
+            setTitle(neighborName);
+        }
+
         // Setup RecyclerView
-        chatAdapter = new ChatAdapter(messageList);
+        chatAdapter = new ChatAdapter(messageList, sentFlags);
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         chatRecyclerView.setAdapter(chatAdapter);
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String message = messageInput.getText().toString().trim();
-                if (!message.isEmpty()) {
-                    messageList.add(message);
-                    chatAdapter.notifyItemInserted(messageList.size() - 1);
-                    chatRecyclerView.scrollToPosition(messageList.size() - 1);
-                    messageInput.setText("");
+        sendButton.setOnClickListener(v -> {
+            String message = messageInput.getText().toString().trim();
+            if (!message.isEmpty()) {
+                // Add sent message
+                messageList.add(message);
+                sentFlags.add(true); // true = sent by me
+                chatAdapter.notifyItemInserted(messageList.size() - 1);
+                chatRecyclerView.scrollToPosition(messageList.size() - 1);
+                messageInput.setText("");
 
-                    // TODO: Insert message to DB and send via BLE here
-                }
+                // TODO: Send message via BLE here
             }
         });
+
+        // TODO: Add receiving message via BLE
+        // Example:
+        // messageList.add("Hello from neighbor!");
+        // sentFlags.add(false); // false = received
+        // chatAdapter.notifyItemInserted(messageList.size() - 1);
+        // chatRecyclerView.scrollToPosition(messageList.size() - 1);
     }
 }
