@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
@@ -13,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     EditText nicknameInput;
     Button saveNickButton;
     RecyclerView neighborRecyclerView;
+    NeighborAdapter neighborAdapter; // ✅ make sure spelling matches the class
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,11 +29,21 @@ public class MainActivity extends AppCompatActivity {
         // Load saved nickname
         nicknameInput.setText(Prefs.getNickname(this));
 
+        // Setup RecyclerView
+        neighborRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        neighborAdapter = new NeighborAdapter(this); // ✅ correct spelling
+        neighborRecyclerView.setAdapter(neighborAdapter);
+
         saveNickButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String nickname = nicknameInput.getText().toString();
+                String nickname = nicknameInput.getText().toString().trim();
+                if (nickname.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Please enter a nickname", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Prefs.setNickname(MainActivity.this, nickname);
+                Toast.makeText(MainActivity.this, "Nickname saved!", Toast.LENGTH_SHORT).show();
             }
         });
     }
