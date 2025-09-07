@@ -10,40 +10,46 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder> {
+public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private List<String> messages;
+    private List<Boolean> sentFlags; // true = sent, false = received
 
     private static final int VIEW_TYPE_SENT = 1;
     private static final int VIEW_TYPE_RECEIVED = 2;
 
-    private final List<String> messages;
-
-    public ChatAdapter(List<String> messages) {
+    public ChatAdapter(List<String> messages, List<Boolean> sentFlags) {
         this.messages = messages;
+        this.sentFlags = sentFlags;
     }
 
     @Override
     public int getItemViewType(int position) {
-        // TEMP: Alternate between sent/received
-        return (position % 2 == 0) ? VIEW_TYPE_SENT : VIEW_TYPE_RECEIVED;
+        return sentFlags.get(position) ? VIEW_TYPE_SENT : VIEW_TYPE_RECEIVED;
     }
 
     @NonNull
     @Override
-    public ChatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view;
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_SENT) {
-            view = LayoutInflater.from(parent.getContext())
+            View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_message_sent, parent, false);
+            return new SentViewHolder(view);
         } else {
-            view = LayoutInflater.from(parent.getContext())
+            View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_message_received, parent, false);
+            return new ReceivedViewHolder(view);
         }
-        return new ChatViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
-        holder.messageText.setText(messages.get(position));
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        String message = messages.get(position);
+        if (holder instanceof SentViewHolder) {
+            ((SentViewHolder) holder).bind(message);
+        } else if (holder instanceof ReceivedViewHolder) {
+            ((ReceivedViewHolder) holder).bind(message);
+        }
     }
 
     @Override
@@ -51,12 +57,29 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ChatViewHolder
         return messages.size();
     }
 
-    static class ChatViewHolder extends RecyclerView.ViewHolder {
-        TextView messageText;
+    static class SentViewHolder extends RecyclerView.ViewHolder {
+        TextView tvMessage;
 
-        ChatViewHolder(@NonNull View itemView) {
+        SentViewHolder(@NonNull View itemView) {
             super(itemView);
-            messageText = itemView.findViewById(R.id.tvMessage);
+            tvMessage = itemView.findViewById(R.id.tvMessage);
+        }
+
+        void bind(String message) {
+            tvMessage.setText(message);
+        }
+    }
+
+    static class ReceivedViewHolder extends RecyclerView.ViewHolder {
+        TextView tvMessage;
+
+        ReceivedViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvMessage = itemView.findViewById(R.id.tvMessage);
+        }
+
+        void bind(String message) {
+            tvMessage.setText(message);
         }
     }
 }

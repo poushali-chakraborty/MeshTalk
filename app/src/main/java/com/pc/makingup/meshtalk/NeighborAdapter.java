@@ -20,6 +20,7 @@ public class NeighborAdapter extends RecyclerView.Adapter<NeighborAdapter.Neighb
 
     public NeighborAdapter(Context context) {
         this.context = context;
+        // Demo neighbors
         neighborList.add("Alice");
         neighborList.add("Bob");
         neighborList.add("Charlie");
@@ -39,7 +40,6 @@ public class NeighborAdapter extends RecyclerView.Adapter<NeighborAdapter.Neighb
         holder.nameText.setText(neighborName);
 
         holder.itemView.setOnClickListener(v -> {
-            // Open ChatActivity and pass the neighbor name
             Intent intent = new Intent(context, ChatActivity.class);
             intent.putExtra("neighbor_name", neighborName);
             context.startActivity(intent);
